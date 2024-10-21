@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marine AI - Equipment Classifier</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-image: url('1.png'); /* 배경 이미지 설정 */
+            background-size: cover; /* 이미지가 화면에 맞게 조정 */
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .hidden {
+            display: none;
+        }
+        .start-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            bottom: 100px; /* "Start" 버튼이 이미지의 해당 위치에 있도록 설정 */
+            font-size: 0; /* 텍스트 숨김 */
+            width: 150px;
+            height: 50px;
+        }
+
+        #camera-screen {
+            background-color: #1e90ff;
+            padding: 20px;
+            color: white;
+            border-radius: 20px;
+            width: 90%;
+        }
+        #webcam-container, #label-container, #info-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="center-container" id="start-screen">
+        <button class="start-btn" onclick="startCamera()">Start</button>
+    </div>
+
+    <div class="center-container hidden" id="camera-screen">
+        <div id="webcam-container"></div>
+        <div class="label">종류: CO2 소화기, FOAM 소화기, POWDER 소화기</div>
+        <div class="maintenance-info">유지보수 방법: 검사, 확인, 교체주기, ...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        const URL = "https://b4060510.github.io/mmumodel/";
+
+        let model, webcam, labelContainer, infoContainer, maxPredictions;
+
+        async function startCamera() {
+            // 시작 화면을 숨기고 카메라 화면을 표시
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('camera-screen').classList.remove('hidden');
+
+            const modelURL = URL + "model.json";
+            const metadataURL =
